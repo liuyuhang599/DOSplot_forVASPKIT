@@ -17,8 +17,10 @@ for i in range(num_elements):
 print("The following PDOS files are being plotted.")
 print(filenamelist)
 datalist = [""] * num_elements * 2
+plt.figure(figsize=(6,4))
 for i in range(len(datalist)):
-    datalist[i] = pd.read_table(filenamelist[i], delim_whitespace = True)
+    #print("i = ",i)
+    datalist[i] = pd.read_csv(filenamelist[i], delim_whitespace = True)
     datalist[i]['d'] = datalist[i]['dxy'] + datalist[i]['dyz'] + datalist[i]['dz2'] + datalist[i]['dxz'] + datalist[i]['dx2']
     datalist[i]['p'] = datalist[i]['px'] + datalist[i]['py'] + datalist[i]['pz']
     datalist[i].to_csv(filenamelist[i] + ".csv")
@@ -28,11 +30,15 @@ for i in range(len(datalist)):
 ##   
 print("Data read successfully!")
 
-print("X axis limit in eV, (positive value)")
-xlimit = float(input())
-print("Y axis limit in eV, (positive value)")
-ylimit = float(input())
-colorlist = ['C0','C1','C2','C3','C4','C5','C6']
+print("X axis upper bound in eV, (positive value)")
+x_upper = float(input())
+print("X axis lower bound in eV, (0 or negative value)")
+x_lower = float(input())
+print("Y axis upper bound in eV, (positive value)")
+y_upper = float(input())
+print("Y axis lower bound in eV, (0 or negative value)")
+y_lower = float(input())
+colorlist = ['b','g','r','c','m','y','k']
 
 
 for i in range(len(datalist)):
@@ -42,8 +48,8 @@ for i in range(len(datalist)):
     d_color = colorlist[d_index]
     plt.plot(datalist[i]['#Energy'], datalist[i]['p'],p_color)
     plt.plot(datalist[i]['#Energy'], datalist[i]['d'],d_color)
-    plt.xlim(xmin = -xlimit, xmax = xlimit)
-    plt.ylim(ymin = -ylimit, ymax = ylimit)
+    plt.xlim(xmin = x_lower, xmax = x_upper)
+    plt.ylim(ymin = y_lower, ymax = y_upper)
     plt.xlabel("Energy (eV)",fontsize=13)
     plt.ylabel("Density of States (ev$^{-1}$)",fontsize=13)
 ##
@@ -60,10 +66,10 @@ for i in range(len(legend_list)):
     legend_list[i] = elements_list[i//2] + orbit
     
 plt.legend(custom_lines, legend_list)
-plt.vlines(0, -ylimit, ylimit, colors = "k", linestyles = "dashed", linewidth = 1)
+plt.vlines(0, y_lower, y_upper, colors = "k", linestyles = "dashed", linewidth = 1)
 figure_name = "Figure_PDOS"
 for name in elements_list:
     figure_name = figure_name + "_" + name
 print("The projected density of states is saved as " + figure_name + ".png")
-plt.savefig(figure_name)
+plt.savefig(figure_name,dpi = 300)
 plt.show()
